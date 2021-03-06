@@ -9,18 +9,31 @@
     "categories": [
         "Programming Languages"
     ],
+    "activationEvents": [
+		"onLanguage:gantt"
+	],
+    "main": "./out/extension.js",
     "contributes": {
-        "languages": [{
-            "id": "gantt",
-            "aliases": ["gantt", "gantt"],
-            "extensions": ["gantt"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "gantt",
-            "scopeName": "source.gantt",
-            "path": "./syntaxes/gantt.tmLanguage.json"
-        }],
+        "languages": [
+            {
+                "id": "gantt",
+                "aliases": [
+                    "gantt",
+                    "gantt"
+                ],
+                "extensions": [
+                    "gantt"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "gantt",
+                "scopeName": "source.gantt",
+                "path": "./syntaxes/gantt.tmLanguage.json"
+            }
+        ],
         "configurationDefaults": {
             "[gantt]": {
                 "editor.insertSpaces": true,
@@ -40,8 +53,26 @@
         "commands": [
             {
                 "title": "Gantt: Show Preview",
-                "command": "extension.showPreview"
+                "command": "gantt.showPreview"
+            },
+            {
+                "title": "Gantt: Welcome to use gantt",
+                "command": "gantt.greeting"
             }
         ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "lint": "eslint . --ext .ts,.tsx",
+        "watch": "tsc -watch -p ./"
+    },
+    "devDependencies": {
+        "@types/node": "^12.12.0",
+        "@types/vscode": "^1.34.0",
+        "@typescript-eslint/eslint-plugin": "^4.16.0",
+        "@typescript-eslint/parser": "^4.16.0",
+        "eslint": "^7.21.0",
+        "typescript": "^4.2.2"
     }
 }
