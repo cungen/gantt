@@ -3,6 +3,7 @@
     "displayName": "Gantt",
     "description": "A gantt chart support for project management",
     "version": "0.0.1",
+    "repository": "https://github.com/cungen/gantt",
     "engines": {
         "vscode": "^1.54.0"
     },
