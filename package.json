@@ -1,0 +1,47 @@
+{
+    "name": "gantt",
+    "displayName": "Gantt",
+    "description": "A gantt chart support for project management",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.54.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "gantt",
+            "aliases": ["gantt", "gantt"],
+            "extensions": ["gantt"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "gantt",
+            "scopeName": "source.gantt",
+            "path": "./syntaxes/gantt.tmLanguage.json"
+        }],
+        "configurationDefaults": {
+            "[gantt]": {
+                "editor.insertSpaces": true,
+                "editor.tabSize": 2,
+                "editor.autoIndent": "advanced"
+            }
+        },
+        "menus": {
+            "editor/title": [
+                {
+                    "when": "resourceLangId == gantt",
+                    "command": "gantt.showPreview",
+                    "group": "navigation"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "title": "Gantt: Show Preview",
+                "command": "extension.showPreview"
+            }
+        ]
+    }
+}
