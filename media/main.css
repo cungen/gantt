@@ -1,0 +1,17 @@
+body.vscode-light {
+    color: black;
+}
+
+body.vscode-dark {
+    color: white;
+    padding: 30px;
+}
+
+body.vscode-high-contrast {
+    color: red;
+}
+
+h1 {
+    font-size: 24px;
+    color: lightblue;
+}
