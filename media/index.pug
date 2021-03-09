@@ -17,5 +17,24 @@ html(lang='en')
             title Gantt Preview
         link(href=stylesMainUri rel='stylesheet')
     body
-        h1 hello world!
+        #app
+            .header
+                h2.title(v-if='title') {{title}}
+                .indicator
+                    svg(width='100%' height='60')
+                        rect(x='0' y='0' width='100%' height='30' fill='#1c84d9')
+                        rect(x='0' y='30' width='100%' height='30' fill='#1c84d9')
+                        g.month
+                            text(x='10' y='20') 04
+                        g.day
+                            text(x='30' y='50') 3
+            .content
+                svg(width='100%' height='100%')
+                    g.task-group(v-for='(g, gIndex) in taskGroup' :key='gIndex')
+                        text(x='0' y='20') {{g.name}}
+                        g.task-item(v-for='(task, tIndex) in g.children' :key='gIndex + "-" + tIndex')
+                            text(x='0' :y='20 * tIndex + 80 * gIndex') {{task.name}}
+                            rect(x='0' :y='20 * tIndex + 80 * gIndex' width='50%' height='20' fill='lightblue')
+
+        script(nonce=nonce src=vueUri)
         script(nonce=nonce src=scriptUri)

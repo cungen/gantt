@@ -19,6 +19,8 @@ module.exports = {
     },
     globals: {
         window: true,
-        document: true
+        document: true,
+        Vue: true,
+        console: true
     }
 };

@@ -152,10 +152,11 @@ class GanttPanel {
 
     private _getHtmlForWebview(webview: vscode.Webview) {
         // Local path to main script run in the webview
-        const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri, 'media', 'main.js');
+        const scriptPathOnDisk = ;
 
         // And the uri we use to load this script in the webview
-        const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
+        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'main.js'));
+        const vueUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'vue.min.js'));
 
         // Local path to css styles
         const stylesPathMainPath = vscode.Uri.joinPath(this._extensionUri, 'media', 'main.css');
@@ -170,6 +171,7 @@ class GanttPanel {
             nonce,
             webview,
             stylesMainUri: stylesMainUri.toString(),
+            vueUri: vueUri.toString(),
             scriptUri: scriptUri.toString()
         });
     }

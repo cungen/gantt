@@ -1,17 +1,35 @@
 body.vscode-light {
     color: black;
 }
-
 body.vscode-dark {
     color: white;
     padding: 30px;
 }
-
 body.vscode-high-contrast {
     color: red;
 }
-
-h1 {
-    font-size: 24px;
-    color: lightblue;
+body {
+    padding: 0;
+    margin: 0;
+}
+* {
+    box-sizing: border-box;
+}
+#app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+}
+.header {
+    flex: none;
+}
+.content {
+    flex: auto;
+}
+g.month text {
+    fill: #eee;
+}
+g.day text {
+    fill: #eee;
 }
