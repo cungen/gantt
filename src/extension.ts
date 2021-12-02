@@ -2,7 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import * as path from "path";
-import GanttPanel from "./GanttPanel";
 import * as YAML from "yaml";
 import { readdirSync } from "fs";
 import { assetsPath, getDiskPath, getWebviewContent } from "./util";
