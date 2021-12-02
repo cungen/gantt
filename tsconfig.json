@@ -2,11 +2,21 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es2019",
-        "lib": ["ES2019"],
+        "lib": [
+            "ES2019",
+            "DOM"
+        ],
         "outDir": "out",
         "sourceMap": true,
-        "strict": true,
-        "rootDir": "src"
+        "strict": true
     },
-    "exclude": ["node_modules", ".vscode-test"]
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "node_modules",
+        ".vscode-test",
+        "vite.config.ts",
+        "front"
+    ]
 }
