@@ -1,12 +1,12 @@
 <template lang="pug">
-.indicator
-    svg(width='100%' height='60')
+.date-indicator
+    svg(width='100%' height='38')
         g.days
             text(
                 v-for='(d,index) in days'
                 :key='d.dateStr'
                 :x='timeScale(d.dateStr)'
-                y='20'
+                y='26'
             ) {{d.date}}
 
 </template>
@@ -16,6 +16,14 @@ import { useScaleTime } from "../composition-api/scale";
 import { get } from "lodash";
 
 export default defineComponent({
+    props: {
+        days: {
+            type: Array,
+            default() {
+                return [];
+            },
+        },
+    },
     setup(props) {
         const timeScale = useScaleTime({
             domain: [get(props.days, "[0].dateStr")],
@@ -24,15 +32,14 @@ export default defineComponent({
             timeScale,
         };
     },
-    props: {
-        days: {
-            type: Array,
-        },
-    },
 });
 </script>
 <style scoped>
+.date-indicator {
+    height: 38px;
+}
 .days text {
     fill: #666;
+    border: 1px solid #e0e0e0;
 }
 </style>

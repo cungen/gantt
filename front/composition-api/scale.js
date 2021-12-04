@@ -1,6 +1,12 @@
 import dayjs from "dayjs";
 
-export function useScaleTime({ domain = [], range = [] }) {
+let instance = null;
+
+export function useScaleTime({ domain = [], range = [] } = {}) {
+    if (instance) {
+        return instance;
+    }
+
     const [start, end] = domain;
     const [startX = 0, endX] = range;
     const startTime = dayjs(start);
@@ -9,10 +15,11 @@ export function useScaleTime({ domain = [], range = [] }) {
         (endX ? endX : startX + 30 - startX) /
         (endTime.unix() - startTime.unix());
 
-    return function (val) {
+    instance = function (val) {
         const date = dayjs(val);
         if (val && date.isValid()) {
             return startX + unit * (date.unix() - startTime.unix());
         }
     };
+    return instance;
 }
