@@ -1,27 +1,40 @@
 <template lang="pug">
 .app-container
     .app-header
-        NRadioGroup(size="medium" type='primary' v-model:value="viewType" @change="handleViewTypeChange")
-            NRadioButton(value="project") 项目视图
-            NRadioButton(value="user") 成员视图
+        .tools
+            NSpace
+                NRadioGroup(size="medium" type='primary' v-model:value="viewType" @change="handleViewTypeChange")
+                    NRadioButton(value="project") 项目视图2
+                    NRadioButton(value="user") 成员视图
+                NDatePicker(v-model='currentDate' @update:value='handleDateChange')
+
         DateIndicator(:days='days')
-    .app-main
+    .app-main(ref='pan')
         .task-group(v-for='(list,k) in realTask' :key='k')
             TaskTitle(:title='k')
             TaskList(:list='list')
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { groupBy } from "lodash";
+import * as d3 from "d3";
+import dayjs from "dayjs";
 import { rangeDays } from "./utils";
-import { NIcon, NRadioGroup, NRadioButton } from "naive-ui";
+import {
+    NIcon,
+    NRadioGroup,
+    NRadioButton,
+    NDatePicker,
+    NSpace,
+} from "naive-ui";
 import DateIndicator from "./components/date-indicator.vue";
 import TaskTitle from "./components/task-title.vue";
 import TaskList from "./components/task-list.vue";
-import { alignColor } from "./composition-api/color";
+import { assignColor } from "./composition-api/color";
 
-// const vscode = acquireVsCodeApi?();
+// eslint-disable-next-line no-undef
+// const vscode = acquireVsCodeApi();
 
 // function update(text) {
 //     vscode.postMessage({
@@ -29,18 +42,23 @@ import { alignColor } from "./composition-api/color";
 //         text: text,
 //     });
 // }
+let lastX = 0;
+let startDate = null;
 
 export default defineComponent({
     components: {
         NIcon,
         NRadioGroup,
         NRadioButton,
+        NDatePicker,
+        NSpace,
         DateIndicator,
         TaskTitle,
         TaskList,
     },
     setup() {
-        return { alignColor };
+        const currentDate = ref("");
+        return { assignColor, currentDate };
     },
     data() {
         return {
@@ -75,29 +93,60 @@ export default defineComponent({
                 ],
             },
             realTask: [],
+            zoom: d3.zoom().scaleExtent([1, 1]).on("zoom", this.handleZoom),
+            panWidth: [],
         };
     },
     created() {
-        this.days = rangeDays(this.data.tasks[0].start);
-        this.handleViewTypeChange();
-        this.alignColor(
-            Array.from(new Set(this.data.tasks.map((item) => item.user)))
-        );
-
         window.addEventListener("message", (event) => {
             const message = event.data;
-            console.log("on msg", event);
             switch (message.command) {
-                case "text":
-                    console.log("vue on msg", message.text);
-                    this.data = message.text;
+                case "data":
+                    console.log("vue on msg", message.data);
+                    // this.data = message.text;
+                    this.handleDataUpdate(message.data);
                     break;
             }
         });
     },
+    mounted() {
+        this.panWidth = this.$refs.pan.clientWidth;
+        this.bindZoom();
+    },
     methods: {
+        handleDataUpdate() {
+            const start = this.data.tasks[0].start;
+            this.days = rangeDays(start);
+            this.handleViewTypeChange();
+            this.assignColor(
+                Array.from(new Set(this.data.tasks.map((item) => item.user)))
+            );
+            this.handleDateChange(start);
+        },
+        handleDateChange(v) {
+            startDate = dayjs(v);
+            console.log(startDate);
+            this.resetZoom();
+        },
+        resetZoom() {
+            const { clientWidth, clientHeight } = this.$refs.pan;
+            d3.select(this.$refs.pan)
+                .transition()
+                .call(
+                    this.zoom.translateTo,
+                    clientWidth * 0.5,
+                    clientHeight * 0.5
+                );
+        },
         handleViewTypeChange() {
             this.realTask = groupBy(this.data.tasks, this.viewType);
+        },
+        bindZoom() {
+            d3.select(this.$refs.pan).call(this.zoom);
+        },
+        handleZoom(e) {
+            lastX = e.transform.x;
+            console.log(e.transform);
         },
     },
 });
@@ -122,6 +171,10 @@ body,
     height: 100%;
     color: #2c3e50;
 }
+.tools {
+    display: flex;
+    flex-direction: row;
+}
 .app-header {
     display: flex;
     flex-direction: column;
@@ -135,5 +188,9 @@ body,
     flex: auto;
     overflow: auto;
     padding: 16px 20px;
+}
+svg {
+    width: 100%;
+    height: 100%;
 }
 </style>
