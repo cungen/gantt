@@ -3,7 +3,7 @@
     .app-header
         .tools
             NSpace
-                NRadioGroup(size="medium" type='primary' v-model:value="viewType" @change="handleViewTypeChange")
+                NRadioGroup(size="medium" type='primary' v-model:value="viewType" @change="updateTasksStatus")
                     NRadioButton(value="project") 项目视图2
                     NRadioButton(value="user") 成员视图
                 NDatePicker(v-model='currentDate' @update:value='handleDateChange')
@@ -17,7 +17,7 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { groupBy, range } from "lodash";
+import { forEach, groupBy, range } from "lodash";
 import * as d3 from "d3";
 import dayjs from "dayjs";
 import {
@@ -70,30 +70,39 @@ export default defineComponent({
                         user: "张三",
                         start: "2020-02-05",
                         end: "2020-02-09",
+                        x: 0,
+                        width: 0,
                     },
                     {
                         project: "新功能A",
                         user: "张三",
                         start: "2020-02-10",
                         end: "2020-02-13",
+                        x: 0,
+                        width: 0,
                     },
                     {
                         project: "优化迭代",
                         user: "李四",
                         start: "2020-02-06",
                         end: "2020-02-08",
+                        x: 0,
+                        width: 0,
                     },
                     {
                         project: "新功能A",
                         user: "李四",
                         start: "2020-02-08",
                         end: "2020-02-15",
+                        x: 0,
+                        width: 0,
                     },
                 ],
             },
             realTask: [],
             zoom: d3.zoom().scaleExtent([1, 1]).on("zoom", this.handleZoom),
             panWidth: 0,
+            timeScale: null,
         };
     },
     created() {
@@ -115,35 +124,41 @@ export default defineComponent({
     },
     methods: {
         updateAxisDays() {
-            const timeScale = d3
+            this.timeScale = d3
                 .scaleLinear()
                 .domain([lastX, lastX + 30])
                 .range([
                     startDate.unix() * 1000,
                     dayjs(startDate).add(1, "day").unix() * 1000,
                 ]);
-            let startUnix = timeScale(0);
+            let startUnix = this.timeScale(0);
             startUnix = startUnix - (startUnix % (1000 * 24 * 60 * 60));
 
             this.days = range(
-                timeScale.invert(startUnix),
+                this.timeScale.invert(startUnix),
                 this.panWidth,
                 30
             ).map((x) => {
                 return {
-                    day: dayjs(timeScale(x)),
+                    day: dayjs(this.timeScale(x)),
                     x,
                 };
             });
         },
         handleDataUpdate() {
+            this.data.tasks.forEach((task) => {
+                if (!task.startDay) {
+                    task.startDay = dayjs(task.start);
+                    task.endDay = dayjs(task.end);
+                }
+            });
             const start = this.data.tasks[0].start;
-            this.handleViewTypeChange();
             this.assignColor(
                 Array.from(new Set(this.data.tasks.map((item) => item.user)))
             );
             this.handleDateChange(start);
             this.updateAxisDays();
+            this.updateTasksStatus();
         },
         handleDateChange(v) {
             startDate = dayjs(v);
@@ -159,8 +174,17 @@ export default defineComponent({
                     clientHeight * 0.5
                 );
         },
-        handleViewTypeChange() {
-            this.realTask = groupBy(this.data.tasks, this.viewType);
+        updateTasksStatus() {
+            const tasks = groupBy(this.data.tasks, this.viewType);
+            forEach(tasks, (list) => {
+                list.forEach((task) => {
+                    task.x = this.timeScale.invert(task.startDay.unix() * 1000);
+                    task.width =
+                        this.timeScale.invert(task.endDay.unix() * 1000) -
+                        task.x;
+                });
+            });
+            this.realTask = tasks;
         },
         bindZoom() {
             d3.select(this.$refs.pan).call(this.zoom);
@@ -168,7 +192,7 @@ export default defineComponent({
         handleZoom(e) {
             lastX = e.transform.x;
             this.updateAxisDays();
-            console.log(e.transform);
+            this.updateTasksStatus();
         },
     },
 });

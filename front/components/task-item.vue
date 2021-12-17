@@ -3,7 +3,6 @@
     .rect(:style='style')
 </template>
 <script>
-import { get } from "lodash";
 import { defineComponent } from "vue";
 import { useColor } from "../composition-api/color";
 
@@ -17,17 +16,17 @@ export default defineComponent({
                     user: "",
                     start: "",
                     end: "",
+                    x: 0,
+                    width: 0,
                 };
             },
         },
     },
     computed: {
         style() {
-            // const left = this.timeScale(this.data.start);
-
             return {
-                // left: left + "px",
-                // width: this.timeScale(this.data.end) - left + "px",
+                left: this.data.x + "px",
+                width: this.data.width + "px",
                 background: useColor(this.data.user),
             };
         },
@@ -39,6 +38,7 @@ export default defineComponent({
     position: relative;
     height: 30px;
     line-height: 30px;
+    overflow: hidden;
 }
 .rect {
     position: absolute;
