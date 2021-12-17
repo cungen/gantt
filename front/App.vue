@@ -17,10 +17,9 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { groupBy } from "lodash";
+import { groupBy, range } from "lodash";
 import * as d3 from "d3";
 import dayjs from "dayjs";
-import { rangeDays } from "./utils";
 import {
     NIcon,
     NRadioGroup,
@@ -94,7 +93,7 @@ export default defineComponent({
             },
             realTask: [],
             zoom: d3.zoom().scaleExtent([1, 1]).on("zoom", this.handleZoom),
-            panWidth: [],
+            panWidth: 0,
         };
     },
     created() {
@@ -111,21 +110,43 @@ export default defineComponent({
     },
     mounted() {
         this.panWidth = this.$refs.pan.clientWidth;
+        this.handleDataUpdate();
         this.bindZoom();
     },
     methods: {
+        updateAxisDays() {
+            const timeScale = d3
+                .scaleLinear()
+                .domain([lastX, lastX + 30])
+                .range([
+                    startDate.unix() * 1000,
+                    dayjs(startDate).add(1, "day").unix() * 1000,
+                ]);
+            let startUnix = timeScale(0);
+            startUnix = startUnix - (startUnix % (1000 * 24 * 60 * 60));
+
+            this.days = range(
+                timeScale.invert(startUnix),
+                this.panWidth,
+                30
+            ).map((x) => {
+                return {
+                    day: dayjs(timeScale(x)),
+                    x,
+                };
+            });
+        },
         handleDataUpdate() {
             const start = this.data.tasks[0].start;
-            this.days = rangeDays(start);
             this.handleViewTypeChange();
             this.assignColor(
                 Array.from(new Set(this.data.tasks.map((item) => item.user)))
             );
             this.handleDateChange(start);
+            this.updateAxisDays();
         },
         handleDateChange(v) {
             startDate = dayjs(v);
-            console.log(startDate);
             this.resetZoom();
         },
         resetZoom() {
@@ -146,6 +167,7 @@ export default defineComponent({
         },
         handleZoom(e) {
             lastX = e.transform.x;
+            this.updateAxisDays();
             console.log(e.transform);
         },
     },

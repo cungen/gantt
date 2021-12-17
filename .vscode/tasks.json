@@ -15,6 +15,15 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "npm",
+            "script": "vite:dev",
+            "problemMatcher": [
+                "$eslint-compact"
+            ],
+            "label": "npm: vite:dev",
+            "detail": "vite"
         }
     ]
 }

@@ -5,7 +5,6 @@
 <script>
 import { get } from "lodash";
 import { defineComponent } from "vue";
-import { useScaleTime } from "../composition-api/scale";
 import { useColor } from "../composition-api/color";
 
 export default defineComponent({
@@ -22,19 +21,13 @@ export default defineComponent({
             },
         },
     },
-    setup(props) {
-        const timeScale = useScaleTime();
-        return {
-            timeScale,
-        };
-    },
     computed: {
         style() {
-            const left = this.timeScale(this.data.start);
+            // const left = this.timeScale(this.data.start);
 
             return {
-                left: left + "px",
-                width: this.timeScale(this.data.end) - left + "px",
+                // left: left + "px",
+                // width: this.timeScale(this.data.end) - left + "px",
                 background: useColor(this.data.user),
             };
         },

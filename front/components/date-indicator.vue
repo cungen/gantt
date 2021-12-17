@@ -4,15 +4,14 @@
         g.days
             text(
                 v-for='(d,index) in days'
-                :key='d.dateStr'
-                :x='timeScale(d.dateStr)'
+                :key='d.day.format("DD/MM/YYYY")'
+                :x='d.x'
                 y='26'
-            ) {{d.date}}
+            ) {{d.day.date()}}
 
 </template>
 <script>
 import { defineComponent } from "vue";
-import { useScaleTime } from "../composition-api/scale";
 import { get } from "lodash";
 
 export default defineComponent({
@@ -23,14 +22,6 @@ export default defineComponent({
                 return [];
             },
         },
-    },
-    setup(props) {
-        const timeScale = useScaleTime({
-            domain: [get(props.days, "[0].dateStr")],
-        });
-        return {
-            timeScale,
-        };
     },
 });
 </script>
