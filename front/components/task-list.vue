@@ -1,6 +1,6 @@
 <template lang="pug">
 .task-list
-    TaskItem(v-for='(item,index) in list' :key='index' :data='item')
+    TaskItem(v-for='(item,index) in list' :key='index' :data='item' :viewType='viewType')
 </template>
 <script>
 import { defineComponent } from "vue";
@@ -16,6 +16,10 @@ export default defineComponent({
             default() {
                 return [];
             },
+        },
+        viewType: {
+            type: String,
+            default: "",
         },
     },
 });

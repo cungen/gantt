@@ -5,10 +5,17 @@ This is the README for your extension "gantt". After writing up a brief descript
 ## TODO
 
 -   [x] Display all the tasks
--   [ ] Add label for task
--   [ ] Change task info by dragging task rect
-    -   [ ] stick rect edge to
+-   [x] Add label for task
 -   [ ] Sync data with gantt files
+-   [ ] Add status bar in bottom to show invalid task info
+-   [ ] Add completion
+    -   [ ] for adding task
+    -   [ ] for editing project
+    -   [ ] for editing users
+-   [ ] add different color for weekend
+-   [ ] add highlight for every column
+-   [ ] Change task info by dragging task rect
+    -   [ ] stick rect edge to axis
 
 ## Features
 

@@ -4,15 +4,17 @@
         .tools
             NSpace
                 NRadioGroup(size="medium" type='primary' v-model:value="viewType" @change="updateTasksStatus")
-                    NRadioButton(value="project") 项目视图2
-                    NRadioButton(value="user") 成员视图
+                    NRadioButton(value="project") Projects
+                    NRadioButton(value="user") Members
                 NDatePicker(v-model='currentDate' @update:value='handleDateChange')
 
         DateIndicator(:days='days')
     .app-main(ref='pan')
         .task-group(v-for='(list,k) in realTask' :key='k')
             TaskTitle(:title='k')
-            TaskList(:list='list')
+            TaskList(:list='list' :viewType='viewType')
+    .app-footer
+
 </template>
 
 <script>
@@ -74,6 +76,14 @@ export default defineComponent({
                         width: 0,
                     },
                     {
+                        project: "优化迭代",
+                        user: "张三",
+                        start: "2020-02-10",
+                        end: "2020-02-13",
+                        x: 0,
+                        width: 0,
+                    },
+                    {
                         project: "新功能A",
                         user: "张三",
                         start: "2020-02-10",
@@ -118,11 +128,19 @@ export default defineComponent({
         });
     },
     mounted() {
-        this.panWidth = this.$refs.pan.clientWidth;
         this.handleDataUpdate();
         this.bindZoom();
+        window.addEventListener("resize", this.handleWindowResize);
+        this.handleWindowResize();
+    },
+    beforeUnmount() {
+        window.removeEventListener("resize", this.handleWindowResize);
     },
     methods: {
+        handleWindowResize() {
+            this.panWidth = this.$refs.pan.clientWidth;
+            this.updateAxisDays();
+        },
         updateAxisDays() {
             this.timeScale = d3
                 .scaleLinear()
@@ -178,10 +196,15 @@ export default defineComponent({
             const tasks = groupBy(this.data.tasks, this.viewType);
             forEach(tasks, (list) => {
                 list.forEach((task) => {
-                    task.x = this.timeScale.invert(task.startDay.unix() * 1000);
-                    task.width =
+                    task.x = Math.max(
+                        0,
+                        this.timeScale.invert(task.startDay.unix() * 1000)
+                    );
+                    task.width = Math.max(
+                        0,
                         this.timeScale.invert(task.endDay.unix() * 1000) -
-                        task.x;
+                            task.x
+                    );
                 });
             });
             this.realTask = tasks;
@@ -234,6 +257,19 @@ body,
     flex: auto;
     overflow: auto;
     padding: 16px 20px;
+}
+.app-footer {
+    flex: 0 0 26px;
+    align-items: center;
+    background: #f0f0f0;
+}
+.task-group {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+.task-group:last-child {
+    border-bottom: 0;
 }
 svg {
     width: 100%;
